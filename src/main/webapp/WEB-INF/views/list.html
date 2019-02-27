@@ -49,26 +49,11 @@
     </div>
     <script type="text/javascript">
     $(function(){
-        $.ajax({
-            url:"http://localhost:8080/ssm_crud/emps",
-            data:"pn=20",
-            type:"GET",
-            dataType:"json",
-            success:function(result){
-               // console.log(result);
-               //员工信息
-               showEmps(result);
-               //页码信息
-               showPageInfo1(result);
-               //分页条信息
-               showPageINfo2(result);
-               //console.log(result.extend.PageInfo.navigatepageNums)
-            }
-        }
-        );
+        toPage(1);
 
     })
     var showEmps= function(result) {
+        $("#EmpTable tbody").empty();
        var emps=result.extend.PageInfo.list;
        $.each(emps,function(index,item){
            var empId=$("<td></td>").append(item.empId)
@@ -90,33 +75,121 @@
        })
     }
     var showPageInfo1 =function(result){
+        $("#pageInfo1").empty();
         var pageInfo=$('<div></div>').append("当前为:第 "+result.extend.PageInfo.pageNum+" 页<br>总共: "+result.extend.PageInfo.pages+" 页"+"<br>总共: "+result.extend.PageInfo.total+" 条记录")
                                      .appendTo("#pageInfo1")
         
     }
     var  showPageINfo2=function(result){
-        var firstPage=$("<li></li>").append($("<a href='#'></a>").append("首页"))
-        var lastPage=$("<li></li>").append($("<a href='#'></a>").append("末页"))
-        var prePage=$("<li></li>").append($("<a href='#' aria-label='Previous'></a>").append($("<span aria-hidden='true'></span>").append("&laquo;")))
-        var nextPage=$("<li></li>").append($("<a href='#' aria-label='Next'></a>").append($("<span aria-hidden='true'></span>").append("&raquo;")))
-        var naviPage1=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[0]))
-        var naviPage2=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[1]))
-        var naviPage3=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[2]))
-        var naviPage4=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[3]))
-        var naviPage5=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[4]))
-        $("<ul></ul>").addClass("pagination").append(firstPage)
+        $("#pageInfo2").empty();
+        //判断此页是否为第一页，如果是第一页则让首页变成disabled状态
+        if (result.extend.PageInfo.hasPreviousPage){
+            var firstPage=$("<li></li>").append($("<a href='#'></a>").append("首页"))
+            firstPage.click(function () {
+                toPage(1);
+            })
+        }
+        else{
+            var firstPage=$("<li></li>").addClass("disabled").append($("<a href='#'></a>").append("首页"))
+        }
+        //末页同理
+        if (result.extend.PageInfo.hasNextPage) {
+            var lastPage=$("<li></li>").append($("<a href='#'></a>").append("末页"))
+            lastPage.click(function () {
+                toPage(result.extend.PageInfo.pages);
+            })
+        }
+        else{
+            var lastPage=$("<li></li>").addClass("disabled").append($("<a href='#'></a>").append("末页"))
+           }
+        //前一页同理
+        if (result.extend.PageInfo.hasPreviousPage){
+            var prePage=$("<li></li>").append($("<a href='#' aria-label='Previous'></a>").append($("<span aria-hidden='true'></span>").append("&laquo;")))
+            prePage.click(function () {
+                toPage(result.extend.PageInfo.pageNum-1);
+            })
+        }
+        else{
+            var prePage=$("<li></li>").addClass("disabled").append($("<a href='#' aria-label='Previous'></a>").append($("<span aria-hidden='true'></span>").append("&laquo;")))
+        }
+        //后一页同理
+        if (result.extend.PageInfo.hasNextPage){
+            var nextPage=$("<li></li>").append($("<a href='#' aria-label='Next'></a>").append($("<span aria-hidden='true'></span>").append("&raquo;")))
+            nextPage.click(function () {
+                toPage(result.extend.PageInfo.pageNum+1);
+            })
+        }
+        else{
+            var nextPage=$("<li></li>").addClass("disabled").append($("<a href='#' aria-label='Next'></a>").append($("<span aria-hidden='true'></span>").append("&raquo;")))
+        }
+        var x=$("<ul></ul>").addClass("pagination").append(firstPage)
                                              .append(prePage)
-                                             .append(naviPage1)
-                                             .append(naviPage2)
-                                             .append(naviPage3)
-                                             .append(naviPage4)
-                                             .append(naviPage5)
-                                             .append(nextPage)
-                                             .append(lastPage)
-                                             .appendTo("#pageInfo2")
+        var navigatepageNums=result.extend.PageInfo.navigatepageNums;
+        $.each(navigatepageNums,function (index,item) {
+            if(item==result.extend.PageInfo.pageNum){
+                var naviPage=$("<li></li>").addClass("disabled").append($("<a href='#'></a>").append(item))
+            }else{
+            var naviPage=$("<li></li>").append($("<a href='#'></a>").append(item))
+                naviPage.click(function () {
+                    toPage(item)
+                })
+            }
+            x.append(naviPage)
 
-                                             
-    }    
+        })
+        // var naviPage1=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[0]))
+        // naviPage1.click(function () {
+        //     toPage(result.extend.PageInfo.navigatepageNums[0])
+        // })
+        // var naviPage2=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[1]))
+        // naviPage2.click(function () {
+        //     toPage(result.extend.PageInfo.navigatepageNums[1])
+        // })
+        // var naviPage3=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[2]))
+        // naviPage3.click(function () {
+        //     toPage(result.extend.PageInfo.navigatepageNums[2])
+        // })
+        // var naviPage4=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[3]))
+        // naviPage4.click(function () {
+        //     toPage(result.extend.PageInfo.navigatepageNums[3])
+        // })
+        // var naviPage5=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[4]))
+        // naviPage5.click(function () {
+        //     toPage(result.extend.PageInfo.navigatepageNums[4])
+        // })
+        // $("<ul></ul>").addClass("pagination").append(firstPage)
+        //                                      .append(prePage)
+        //                                      .append(naviPage1)
+        //                                      .append(naviPage2)
+        //                                      .append(naviPage3)
+        //                                      .append(naviPage4)
+        //                                      .append(naviPage5)
+        //                                      .append(nextPage)
+        //                                      .append(lastPage)
+        //                                      .appendTo("#pageInfo2")
+        x.append(nextPage)
+            .append(lastPage)
+            .appendTo("#pageInfo2");
+    }
+    //跳转页面方法
+        var toPage=function (pageNum) {
+        $.ajax({
+            url:"http://localhost:8080/ssm_crud/emps",
+            data:"pn="+pageNum,
+            type:"GET",
+            dataType:"json",
+            success:function(result){
+                // console.log(result);
+                //员工信息
+                showEmps(result);
+                //页码信息
+                showPageInfo1(result);
+                //分页条信息
+                showPageINfo2(result);
+                //console.log(result.extend.PageInfo.navigatepageNums)
+            }
+        })
+        }
     </script>
 </body>
 </html>
