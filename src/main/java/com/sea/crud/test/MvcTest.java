@@ -45,7 +45,7 @@ public class MvcTest {
 		//请求成功后  请求域中会有一个pageInfo，我们可以取出pageInfo进行验证
 		MockHttpServletRequest request=result.getRequest();
 		PageInfo pi=(PageInfo)request.getAttribute("page");
-		System.out.println(pi.getPages());
-		//System.out.println("hello");
+		//System.out.println(pi.getPages());
+		System.out.println("hello");
 	}
 }
