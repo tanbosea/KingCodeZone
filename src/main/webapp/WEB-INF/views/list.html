@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
+   <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+   <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<title>Insert title here</title>
+</head>
+<body>
+    <div class="container">
+        <!--标题-->
+        <div class="row">
+            <div class="col-md-12"><h2>员工信息管理系统</h2></div>
+        </div>
+         <!--按钮-->
+        <div class="row">
+            <div class="col-md-4 col-md-offset-11">
+             <button type="button" class="btn btn-info">编辑</button>
+             <button type="button" class="btn btn-danger">删除</button>
+        </div>
+         <!--表格-->
+        <div class="row">
+                <div class="col-md-12">
+                        <table class="table table-bordered" id="EmpTable">
+                                <thead>
+                                    <tr>
+                                        <th>员工Id</th>
+                                        <th>员工姓名</th>
+                                        <th>员工性别</th>
+                                        <th>员工邮箱</th>
+                                        <th>员工所属部门</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                </div>
+        </div>
+         <!--分页-->
+        <div class="row">
+            <div class="col-md-4" id="pageInfo1"></div>
+            <div calss="col-md-4" >
+                    <nav aria-label="Page navigation" id="pageInfo2">
+                          </nav>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        $.ajax({
+            url:"http://localhost:8080/ssm_crud/emps",
+            data:"pn=1",
+            type:"GET",
+            dataType:"json",
+            success:function(result){
+               // console.log(result);
+               //员工信息
+               showEmps(result);
+               //页码信息
+               showPageInfo1(result);
+               //分页条信息
+               showPageINfo2(result);
+               //console.log(result.extend.PageInfo.navigatepageNums)
+            }
+        }
+        );
+
+    })
+    var showEmps= function(result) {
+       var emps=result.extend.PageInfo.list;
+       $.each(emps,function(index,item){
+           var empId=$("<td></td>").append(item.empId)
+           var empName= $("<td></td>").append(item.empName)
+           var empSex= $("<td></td>").append(item.gender=="M"?"男":"女")
+           var empEmail=$("<td></td>").append(item.email)
+           var deptName=$("<td></td>").append(item.department.deptName)
+           var btnEdit=$("<button></button>").addClass("btn btn-info").append("编辑")
+           var btnDelete=$("<button></button>").addClass("btn btn-danger").append("删除")
+           var operation=$("<td></td>").append(btnEdit).append(" ").append(btnDelete)
+           //将其添加到tbody下
+          $("<tr></tr>").append(empId)
+                        .append(empName)
+                        .append(empSex)
+                        .append(empEmail)
+                        .append(deptName)
+                        .append(operation)
+                        .appendTo("#EmpTable tbody");
+       })
+    }
+    var showPageInfo1 =function(result){
+        var pageInfo=$('<div></div>').append("当前为:第 "+result.extend.PageInfo.pageNum+" 页<br>总共: "+result.extend.PageInfo.pages+" 页"+"<br>总共: "+result.extend.PageInfo.total+" 条记录")
+                                     .appendTo("#pageInfo1")
+        
+    }
+    var  showPageINfo2=function(result){
+        var firstPage=$("<li></li>").append($("<a href='#'></a>").append("首页"))
+        var lastPage=$("<li></li>").append($("<a href='#'></a>").append("末页"))
+        var prePage=$("<li></li>").append($("<a href='#' aria-label='Previous'></a>").append($("<span aria-hidden='true'></span>").append("&laquo;")))
+        var nextPage=$("<li></li>").append($("<a href='#' aria-label='Next'></a>").append($("<span aria-hidden='true'></span>").append("&raquo;")))
+        var naviPage1=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[0]))
+        var naviPage2=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[1]))
+        var naviPage3=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[2]))
+        var naviPage4=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[3]))
+        var naviPage5=$("<li></li>").append($("<a href='#'></a>").append(result.extend.PageInfo.navigatepageNums[4]))
+        $("<ul></ul>").addClass("pagination").append(firstPage)
+                                             .append(prePage)
+                                             .append(naviPage1)
+                                             .append(naviPage2)
+                                             .append(naviPage3)
+                                             .append(naviPage4)
+                                             .append(naviPage5)
+                                             .append(nextPage)
+                                             .append(lastPage)
+                                             .appendTo("#pageInfo2")
+
+                                             
+    }    
+    </script>
+</body>
+</html>
