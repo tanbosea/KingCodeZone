@@ -5,9 +5,116 @@
 <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 <title>Insert title here</title>
 </head>
 <body>
+<!--新增编辑框-->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="EditModalLabel">修改员工信息</h4>
+            </div>
+            <div class="modal-body" id="empinfo">
+                <form class="form-horizontal" >
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">员工姓名</label>
+                        <div class="col-sm-10">
+                            <input name="name" type="empName" class="form-control" id="empName" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">员工邮箱</label>
+                        <div class="col-sm-10">
+                            <input name="email"type="Email" class="form-control" id="empEmail" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">员工性别</label>
+                        <div class="col-sm-10">
+
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="empgender1" value="M" checked> 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="empgender2" value="F" checked> 女
+                            </label>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">员工部门</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="empdept" name="dId">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="addSave1">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增对话框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">新增员工信息</h4>
+            </div>
+            <div class="modal-body" id="allinfo">
+                <form class="form-horizontal" >
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">员工姓名</label>
+                    <div class="col-sm-10">
+                        <input name="name" type="empName" class="form-control" id="inputName" placeholder="Name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">员工邮箱</label>
+                    <div class="col-sm-10">
+                        <input name="email"type="Email" class="form-control" id="inputEmail" placeholder="Email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">员工性别</label>
+                    <div class="col-sm-10">
+
+                        <label class="radio-inline">
+                            <input type="radio" name="gender" id="inputGender1" value="M" checked> 男
+                         </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="inputGender2" value="F" checked> 女
+                            </label>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">员工部门</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="inputDept3" name="dId">
+
+                        </select>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="addSave">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+
+            </div>
+        </div>
+    </div>
+</div>
     <div class="container">
         <!--标题-->
         <div class="row">
@@ -16,7 +123,7 @@
          <!--按钮-->
         <div class="row">
             <div class="col-md-4 col-md-offset-11">
-             <button type="button" class="btn btn-info">编辑</button>
+             <button type="button" class="btn btn-info" id="addUser" >新增</button>
              <button type="button" class="btn btn-danger">删除</button>
         </div>
          <!--表格-->
@@ -50,7 +157,6 @@
     <script type="text/javascript">
     $(function(){
         toPage(1);
-
     })
     var showEmps= function(result) {
         $("#EmpTable tbody").empty();
@@ -61,8 +167,8 @@
            var empSex= $("<td></td>").append(item.gender=="M"?"男":"女")
            var empEmail=$("<td></td>").append(item.email)
            var deptName=$("<td></td>").append(item.department.deptName)
-           var btnEdit=$("<button></button>").addClass("btn btn-info").append("编辑")
-           var btnDelete=$("<button></button>").addClass("btn btn-danger").append("删除")
+           var btnEdit=$("<button></button>").addClass("btn btn-info Edit").append("编辑")
+           var btnDelete=$("<button></button>").addClass("btn btn-danger Delete").append("删除")
            var operation=$("<td></td>").append(btnEdit).append(" ").append(btnDelete)
            //将其添加到tbody下
           $("<tr></tr>").append(empId)
@@ -73,6 +179,14 @@
                         .append(operation)
                         .appendTo("#EmpTable tbody");
        })
+        //给每个编辑按钮绑上事件
+        $(".Edit").click(function () {
+            $('#editModal').modal()
+        })
+        //给每个删除按钮绑上事件
+        $(".Delete").click(function () {
+            console.log("To Delete")
+        })
     }
     var showPageInfo1 =function(result){
         $("#pageInfo1").empty();
@@ -190,8 +304,55 @@
             }
         })
         }
+        $("#addUser").click(function(){
+            getDepts();
+            $('#myModal').modal({
+            })
+        })
+    //请求后端得到所有部门信息，并且显示在新增对话框的下拉列表中
+        var getDepts =function () {
+        $("#inputDept3").empty();
+        $.ajax({
+            url:"http://localhost:8080/ssm_crud/getDepts",
+            type: "GET",
+            dataType: "json",
+            success:function (result) {
+                var depts=result.extend.DeptsInfo;
+                $.each(depts,function(index,item){
+                    var deptsOption =$("<option></option>").append(item.deptName).attr("value",item.deptId)
+                        .appendTo("#inputDept3")
+                })
+            }
+        })
+        }
+        //将新增页面信息发送给后端请求保存
+        $("#addSave").click(function () {
+          //把新增页面所要增加的信息封进emp
+            var emp={"empName":$("#inputName").val(),
+                "gender":$("input[name='inlineRadioOptions']:checked").val(),
+                "email":$("#inputEmail").val(),
+               "dId": $("#inputDept3").val()}
+          //      $.ajax({
+          //          url:"http://localhost:8080/ssm_crud/emps",
+          //          type:"POST",
+          //          data:$("#allinfo form").serialize(),
+          //          success:function (result){
+          //              alert(result.msg)
+          //          }
+          //      })
+               $.ajax({
+                   url:"http://localhost:8080/ssm_crud/emps",
+                   type:"POST",
+                   data:emp,
+                   dataType:"json",
+                   success:function (result) {
+                       alert("保存成功")
+                       $('#myModal').modal('toggle')
+                   }
+               })
+        })
+
+
     </script>
 </body>
 </html>
-
-<!--测试webstrom-->

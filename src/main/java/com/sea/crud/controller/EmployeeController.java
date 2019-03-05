@@ -7,8 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +19,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sea.crud.bean.Employee;
 import com.sea.crud.bean.Msg;
+import com.sea.crud.service.DepartmentService;
 import com.sea.crud.service.EmployeeService;
 
 @Controller
@@ -24,6 +27,8 @@ public class EmployeeController {
 
 	@Autowired
 	EmployeeService employeeService;
+	@Autowired
+	DepartmentService departmentService;
 
 	/*
 	 * 查询所有员工/
@@ -43,9 +48,8 @@ public class EmployeeController {
 	@RequestMapping("/index")
 	public String getIndex() {
 		return "index";
-	}
-	
-	@RequestMapping("/emps")
+	}	
+	@RequestMapping(value="/emps",method=RequestMethod.GET)
 	@ResponseBody
 	public Msg getEmpsWithJson(@RequestParam(value = "pn", defaultValue = "1") Integer pn, Model model,HttpServletResponse response) {
 		// 使用一个分页插件 PageHelper
@@ -56,5 +60,20 @@ public class EmployeeController {
 		// 把查询到的数据 封装到PageInfo PageInfo自带分页数据
 		PageInfo page = new PageInfo(emps, 5);
 		return Msg.success().add("PageInfo", page);
+	}
+	@RequestMapping("/getDepts")
+	@ResponseBody
+	public Msg getDepts(Model model,HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Origin", "*"); 
+		List depts=departmentService.getDeptsName();
+		return Msg.success().add("DeptsInfo", depts);
+		
+	}
+	@CrossOrigin(origins = {"http://localhost:63342", "null"})
+	@RequestMapping(value="/emps",method=RequestMethod.POST)
+	@ResponseBody
+	public Msg addEmps(Employee emp) {
+		employeeService.addEmp(emp);		
+		return Msg.success();		
 	}
 }

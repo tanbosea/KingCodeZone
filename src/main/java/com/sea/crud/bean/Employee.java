@@ -10,7 +10,7 @@ public class Employee {
     private String empName;
 
     private Integer dId;
-
+    
     public Department getDepartment() {
 		return department;
 	}
